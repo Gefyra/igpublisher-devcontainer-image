@@ -1,6 +1,9 @@
 name: Build Devcontainer Image
 
 on:
+  repository_dispatch:
+    types:
+      - ig-publisher-image-updated
   push:
     branches:
       - main
