@@ -29,7 +29,7 @@ if [ ! -e "$CACHE_JAR" ]; then
   elif [ -f _updatePublisher.sh ]; then
     bash _updatePublisher.sh -y
   else
-    echo "Kein Publisher im Image und kein _updatePublisher.sh - übersprungen."
+    echo "No publisher in the image and no _updatePublisher.sh - skipped."
   fi
 
 elif [ ! -L "$CACHE_JAR" ] && [ -f "$IMAGE_JAR" ]; then
@@ -55,9 +55,9 @@ fi
 if [ -L "$CACHE_JAR" ] && [ -f .vscode/tasks.json ] \
    && grep -q '_updatePublisher\.sh' .vscode/tasks.json 2>/dev/null; then
   echo ""
-  echo "⚠ .vscode/tasks.json ruft _updatePublisher.sh direkt auf."
-  echo "  Der Task 'Update IG Publisher' schlägt so fehl (curl kann nicht durch"
-  echo "  den Symlink nach /opt schreiben). Bitte dessen command ersetzen durch:"
+  echo "⚠ .vscode/tasks.json calls _updatePublisher.sh directly."
+  echo "  The 'Update IG Publisher' task fails that way: curl cannot write"
+  echo "  through the symlink into /opt. Replace its command with:"
   echo "      ig-update-publisher"
   echo ""
 fi

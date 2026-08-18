@@ -3,13 +3,13 @@
 set -uo pipefail
 
 if [ ! -f output/full-ig.zip ]; then
-  echo "✗ Fehler: output/full-ig.zip existiert nicht. Bitte erst einen Full Build durchführen."
+  echo "✗ output/full-ig.zip does not exist. Run a full build first."
   exit 1
 fi
 
-echo "✓ full-ig.zip bereit zum Download"
+echo "✓ full-ig.zip is ready"
 echo ""
-echo "Pfad: output/full-ig.zip"
-echo "Im VS Code: Rechtsklick auf Datei → Download..."
+echo "Path: output/full-ig.zip"
+echo "In VS Code: right-click the file → Download..."
 echo ""
 ls -lh output/full-ig.zip

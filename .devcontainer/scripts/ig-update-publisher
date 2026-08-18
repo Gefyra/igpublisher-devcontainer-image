@@ -11,7 +11,7 @@ if [ -L "$CACHE_JAR" ]; then
 fi
 
 if [ ! -f _updatePublisher.sh ]; then
-  echo "✗ _updatePublisher.sh nicht gefunden - kein IG-Workspace?"
+  echo "✗ _updatePublisher.sh not found - is this an IG workspace?"
   exit 1
 fi
 
