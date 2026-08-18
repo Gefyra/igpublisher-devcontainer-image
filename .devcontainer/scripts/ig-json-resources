@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Task "Download: JSON Resources". Zips the SUSHI output for download.
+set -uo pipefail
+
+src=fsh-generated/resources
+out=json-resources.zip
+
+if [ ! -d "$src" ]; then
+  echo "✗ Fehler: Verzeichnis $src existiert nicht. Bitte erst SUSHI Build durchführen."
+  exit 1
+fi
+
+if [ -z "$(find "$src" -name '*.json' -print -quit)" ]; then
+  echo "✗ Fehler: Keine JSON-Dateien in $src gefunden."
+  exit 1
+fi
+
+echo "Erstelle ZIP-Archiv..."
+rm -f "$out"
+zip -r "$out" "$src"/*.json || exit 1
+
+echo ""
+echo "✓ $out erstellt"
+echo ""
+echo "Pfad: $out"
+echo "Im VS Code: Rechtsklick auf Datei → Download..."
+echo ""
+ls -lh "$out"

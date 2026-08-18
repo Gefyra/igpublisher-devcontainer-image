@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Task "Update IG Publisher". Fetches the current HL7 release into input-cache.
+set -uo pipefail
+
+. /usr/local/share/ig-devcontainer/lib.sh
+
+# _updatePublisher.sh writes with `curl -o`, which follows a symlink into the
+# root-owned image jar and fails. Drop the link so curl creates a real file.
+if [ -L "$CACHE_JAR" ]; then
+  rm -f "$CACHE_JAR"
+fi
+
+if [ ! -f _updatePublisher.sh ]; then
+  echo "✗ _updatePublisher.sh nicht gefunden - kein IG-Workspace?"
+  exit 1
+fi
+
+exec bash _updatePublisher.sh -y

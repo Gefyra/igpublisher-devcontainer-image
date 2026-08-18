@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Task "Git: Commit Changes". Stages everything and commits with the given message.
+set -uo pipefail
+
+if ! git config user.name >/dev/null || ! git config user.email >/dev/null; then
+  echo "✗ Git-Identität ist nicht konfiguriert."
+  echo ""
+  echo "Bitte einmalig im Terminal ausführen:"
+  echo "  git config --global user.name \"Dein Name\""
+  echo "  git config --global user.email \"du@example.org\""
+  exit 1
+fi
+
+msg=${1:-}
+if [ -z "$msg" ]; then
+  echo "✗ Keine Commit-Nachricht angegeben."
+  exit 1
+fi
+
+git add -A && git commit -m "$msg"
