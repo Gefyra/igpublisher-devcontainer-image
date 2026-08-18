@@ -48,4 +48,18 @@ elif [ ! -L "$CACHE_JAR" ] && [ -f "$IMAGE_JAR" ]; then
   fi
 fi
 
+# Projects created from the template before the tasks moved into the image still
+# call _updatePublisher.sh directly. That writes with `curl -o`, which follows
+# the link we just created into root-owned /opt and fails with curl exit 23.
+# Nothing is destroyed, but the task is broken until tasks.json is updated.
+if [ -L "$CACHE_JAR" ] && [ -f .vscode/tasks.json ] \
+   && grep -q '_updatePublisher\.sh' .vscode/tasks.json 2>/dev/null; then
+  echo ""
+  echo "⚠ .vscode/tasks.json ruft _updatePublisher.sh direkt auf."
+  echo "  Der Task 'Update IG Publisher' schlägt so fehl (curl kann nicht durch"
+  echo "  den Symlink nach /opt schreiben). Bitte dessen command ersetzen durch:"
+  echo "      ig-update-publisher"
+  echo ""
+fi
+
 echo "Devcontainer ready."
