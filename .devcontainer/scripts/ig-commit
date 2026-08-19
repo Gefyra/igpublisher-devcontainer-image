@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# Task "Git: Commit Changes". Stages everything and commits with the given message.
+# Task "Git: Commit & Push". Stages everything, commits, and pushes the branch.
+#
+# The push is part of the job rather than a separate step: a commit that only
+# exists inside a Codespace is not saved in any sense the person clicking the
+# button would recognise.
 set -uo pipefail
 
 if ! git config user.name >/dev/null || ! git config user.email >/dev/null; then
@@ -17,4 +21,35 @@ if [ -z "$msg" ]; then
   exit 1
 fi
 
-git add -A && git commit -m "$msg"
+git add -A || exit 1
+
+if git diff --cached --quiet; then
+  echo "Nothing to commit."
+  exit 0
+fi
+
+# Everything staged is about to become a commit, so show it. `git add -A` also
+# picks up files nobody meant to commit, and this is the only chance to notice.
+echo "Committing:"
+git diff --cached --name-status | sed 's/^/  /'
+echo ""
+
+git commit -qm "$msg" || exit 1
+echo "✓ Committed to $(git rev-parse --abbrev-ref HEAD)."
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo "No 'origin' remote - the commit stays local."
+  exit 0
+fi
+
+# -u covers both cases: a branch that already tracks a remote, and a freshly
+# created one that does not. Without it the latter fails outright, and creating
+# branches is the normal way to get a Pages preview of your own.
+if git push -u origin HEAD; then
+  echo "✓ Pushed."
+else
+  echo ""
+  echo "✗ The commit was created but could not be pushed."
+  echo "  It is safe locally; push it once the cause is resolved."
+  exit 1
+fi
