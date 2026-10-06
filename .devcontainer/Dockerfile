@@ -23,6 +23,16 @@ RUN set -eux; \
       ln -sf "/usr/local/share/ig-devcontainer/$c" "/usr/local/bin/$c"; \
     done
 
+# ig-external-profiles: renders profiles from dependency packages via a helper IG
+# (https://github.com/Gefyra/ig-external-profiles-action). Pinned to a release so a
+# rebuild does not change behaviour silently; bump the version to update.
+ARG IG_EXTERNAL_PROFILES_VERSION=v1.0.0
+RUN set -eux; \
+    curl -fsSL "https://raw.githubusercontent.com/Gefyra/ig-external-profiles-action/${IG_EXTERNAL_PROFILES_VERSION}/bin/ig-external-profiles.js" \
+      -o /usr/local/share/ig-devcontainer/ig-external-profiles.js; \
+    printf '#!/usr/bin/env bash\nexec node /usr/local/share/ig-devcontainer/ig-external-profiles.js "$@"\n' > /usr/local/bin/ig-external-profiles; \
+    chmod 0755 /usr/local/bin/ig-external-profiles
+
 # Devcontainer image metadata (https://containers.dev/implementors/spec/#image-metadata).
 # Merged into every consuming devcontainer.json at create time: lifecycle commands
 # are collected and all run, forwardPorts is unioned, extensions are merged, and
