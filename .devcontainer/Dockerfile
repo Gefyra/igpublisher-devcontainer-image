@@ -27,9 +27,9 @@ RUN set -eux; \
 # (https://github.com/Gefyra/ig-external-profiles-action). Pinned to a release so a
 # rebuild does not change behaviour silently; bump the version to update.
 ARG IG_EXTERNAL_PROFILES_VERSION=v1.0.0
+ADD --chmod=0644 "https://raw.githubusercontent.com/Gefyra/ig-external-profiles-action/${IG_EXTERNAL_PROFILES_VERSION}/bin/ig-external-profiles.js" \
+    /usr/local/share/ig-devcontainer/ig-external-profiles.js
 RUN set -eux; \
-    curl -fsSL "https://raw.githubusercontent.com/Gefyra/ig-external-profiles-action/${IG_EXTERNAL_PROFILES_VERSION}/bin/ig-external-profiles.js" \
-      -o /usr/local/share/ig-devcontainer/ig-external-profiles.js; \
     printf '#!/usr/bin/env bash\nexec node /usr/local/share/ig-devcontainer/ig-external-profiles.js "$@"\n' > /usr/local/bin/ig-external-profiles; \
     chmod 0755 /usr/local/bin/ig-external-profiles
 
