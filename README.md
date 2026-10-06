@@ -55,6 +55,7 @@ The image ships wrappers for `.vscode/tasks.json`. They hold the logic so that `
 | `ig-commit "<msg>"` | Checks the git identity, stages everything, commits |
 | `ig-package` | Points at `output/full-ig.zip` for download |
 | `ig-json-resources` | Packs `fsh-generated/resources/*.json` into a ZIP |
+| `ig-external-profiles` | Renders profiles from dependency packages as includes, see [ig-external-profiles-action](https://github.com/Gefyra/ig-external-profiles-action). Run it before the build if the IG has an `external-profiles.yaml` |
 
 The remaining tasks call the tools directly: `sushi`, `./_genonce.sh -no-sushi`, `fhir-pkg-tool`, `python3 -m http.server 8080`.
 
