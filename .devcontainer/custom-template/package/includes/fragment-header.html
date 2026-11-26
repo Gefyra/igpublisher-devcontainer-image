@@ -2,9 +2,28 @@
   Left side of the page header. The base template leaves this include empty
   for child templates to fill. Swap the image for your own logo: put the file
   into content/assets/images/ and change src, alt and the link below.
+
+  Next to the logo:
+  - header-links.html, empty in this template. An IG fills it by putting its
+    own input/includes/header-links.html - an IG's includes win over the
+    template's.
+  - Badges with the IG's status and, if set, "experimental" (from
+    sushi-config.yaml), styled by .ig-badge in custom.css.
 {% endcomment %}
         <div id="project-nav">
           <a id="project-logo" no-external="true" href="https://gefyra.info/">
             <img height="50" alt="Gefyra" src="{{site.data.info.assets | escape}}assets/images/gefyra-logo.png"/>
           </a>
+{%- capture header_links -%}{% include header-links.html lang=include.lang %}{%- endcapture -%}
+{%- assign header_links = header_links | strip -%}
+{%- if header_links != '' %}
+          <span id="header-links">{{ header_links }}</span>
+{%- endif %}
+        </div>
+{%- assign ig_status = site.data.fhir.ig.status | default: "unknown" %}
+        <div id="ig-badges">
+          <span class="ig-badge ig-badge-{{ ig_status | escape }}" title="ImplementationGuide.status">{{ ig_status | escape }}</span>
+{%- if site.data.fhir.ig.experimental %}
+          <span class="ig-badge ig-badge-experimental" title="ImplementationGuide.experimental">{% if include.lang == 'de' %}experimentell{% else %}experimental{% endif %}</span>
+{%- endif %}
         </div>

@@ -1,5 +1,28 @@
 {% comment %}
   Loaded in every page's <head>, after the base template's stylesheets, so the
   rules in custom.css win. Add further stylesheets here if you need them.
+  It is the one place in <head> a child template can add to, so it also holds
+  the meta tags below.
 {% endcomment %}
 <link href="{{site.data.info.assets | escape}}assets/css/custom.css" rel="stylesheet"/>
+{%- assign meta_desc = site.data.fhir.ig.descriptionlang[include.lang] | default: site.data.fhir.ig.description | default: "" | strip_html | strip_newlines | truncate: 160 -%}
+{%- if meta_desc != "" %}
+<meta name="description" content="{{ meta_desc | escape }}"/>
+{%- endif %}
+<!-- Color of the browser bar on phones; keep in sync with --brand-color in custom.css -->
+<meta name="theme-color" content="#d32e22"/>
+{%- comment %}
+  Draft banner: while the IG is a CI build or has status draft, a bar under the
+  menu says so, on every page. The bar itself is styled in custom.css
+  (#segment-breadcrumb::before); only its text is set here, per language.
+  To drop it, delete this block.
+{% endcomment -%}
+{%- assign release_label = site.data.fhir.releaseLabel | default: "" | downcase -%}
+{%- if release_label == "ci-build" or site.data.fhir.ig.status == "draft" -%}
+{%- if include.lang == "de" -%}
+{%- assign draft_text = "Entwurf – dieser Implementation Guide ist ein Arbeitsstand und kann sich jederzeit ändern." -%}
+{%- else -%}
+{%- assign draft_text = "Draft – this Implementation Guide is a work in progress and may change at any time." -%}
+{%- endif %}
+<style>#segment-breadcrumb::before { content: "{{ draft_text }}"; }</style>
+{%- endif %}
