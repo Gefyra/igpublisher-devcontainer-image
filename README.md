@@ -56,7 +56,8 @@ The image ships wrappers for `.vscode/tasks.json`. They hold the logic so that `
 | `ig-package` | Points at `output/full-ig.zip` for download |
 | `ig-ai-package` | Points at `output/<lang>/ai.zip` (the guide as Markdown for AI tools) for download |
 | `ig-json-resources` | Packs `fsh-generated/resources/*.json` into a ZIP |
-| `ig-add-template` | Copies a starter template (logo, colors, examples) to `custom-template/` and switches `ig.ini` to it; does nothing if one exists |
+| `ig-add-template` | Copies a starter template (logo, colors, examples) to `custom-template/`, switches `ig.ini` to it and adds a page showing its features; does nothing if one exists |
+| `ig-add-example-page` | Adds `input/pagecontent/ig-features.md`, examples of IG Publisher features (links, conformance statements, Mermaid, fragments, lists) built on a profile and an example of the IG, and links it in the menu |
 
 The remaining tasks call the tools directly: `sushi`, `./_genonce.sh -no-sushi`, `fhir-pkg-tool`, `python3 -m http.server 8080`.
 

@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Task "Add Example Page". Adds input/pagecontent/ig-features.md, a page with
+# working examples of IG Publisher features, and links it in the menu. The
+# examples use a profile and an example of this IG, so they build here.
+set -uo pipefail
+
+. /usr/local/share/ig-devcontainer/lib.sh
+
+PAGE=ig-features.md
+DEST=input/pagecontent/$PAGE
+
+if [ ! -f ig.ini ]; then
+  echo "✗ ig.ini not found - is this an IG workspace?"
+  exit 1
+fi
+
+if [ -e "$DEST" ]; then
+  echo "ℹ $DEST already exists - nothing to do."
+  echo "  To start over, delete it and run this task again."
+  exit 0
+fi
+
+# Pick a profile and an example the page can show. Prints five lines:
+# profile id, name, url; example type, id.
+picked=$(python3 -I - <<'PY'
+import json, pathlib, sys
+conformance = {"StructureDefinition", "ValueSet", "CodeSystem", "ImplementationGuide",
+               "CapabilityStatement", "SearchParameter", "OperationDefinition", "ConceptMap",
+               "NamingSystem", "StructureMap", "ActorDefinition", "Requirements"}
+profile = example = None
+files = sorted(pathlib.Path("fsh-generated/resources").glob("*.json")) + \
+        sorted(pathlib.Path("input/resources").glob("*.json"))
+for f in files:
+    try:
+        r = json.loads(f.read_text(encoding="utf-8"))
+    except Exception:
+        continue
+    t = r.get("resourceType")
+    if not profile and t == "StructureDefinition" and r.get("derivation") == "constraint" \
+            and r.get("kind") == "resource" and r.get("type") != "Extension":
+        profile = r
+    elif not example and t and t not in conformance and r.get("id"):
+        example = r
+if not profile or not example:
+    sys.exit(1)
+print(profile["id"]); print(profile.get("name", profile["id"])); print(profile.get("url", ""))
+print(example["resourceType"]); print(example["id"])
+PY
+)
+if [ $? -ne 0 ] || [ -z "$picked" ]; then
+  echo "✗ The page needs a profile of a resource and an example in this IG."
+  echo "  Run 'SUSHI: Build FSH' first, so fsh-generated/resources/ holds them."
+  exit 1
+fi
+{ read -r profile_id; read -r profile_name; read -r profile_url; read -r example_type; read -r example_id; } <<< "$picked"
+
+add_page "$PAGE" "IG Features" || exit 0
+
+# The conformance statement table may appear only once in an IG.
+if grep -rlx --include='*.md' '§§§' input/pagecontent input/pages 2>/dev/null | grep -v "$DEST" >/dev/null; then
+  table='(This IG already shows the table on another page, so it is left out here.)'
+else
+  table='§§§'
+fi
+
+python3 -I - "$DEST" "$profile_id" "$profile_name" "$profile_url" "$example_type" "$example_id" "$table" <<'PY'
+import sys
+dest, pid, pname, purl, etype, eid, table = sys.argv[1:]
+text = open(dest, encoding="utf-8").read()
+for k, v in {"__PROFILE_ID__": pid, "__PROFILE_NAME__": pname, "__PROFILE_URL__": purl,
+             "__EXAMPLE_TYPE__": etype, "__EXAMPLE_ID__": eid, "__CONFORMANCE_TABLE__": table}.items():
+    text = text.replace(k, v)
+open(dest, "w", encoding="utf-8").write(text)
+PY
+
+echo "  Examples use the profile $profile_name and the example $example_type/$example_id."
+echo ""
+echo "  Run 'IG Publisher: Full Build' and open 'IG Features' in the menu."

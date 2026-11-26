@@ -4,6 +4,8 @@
 # far, so nothing is lost: it only adds a logo, colors and a few examples.
 set -uo pipefail
 
+. /usr/local/share/ig-devcontainer/lib.sh
+
 SRC=/usr/local/share/ig-devcontainer/custom-template
 DEST=custom-template
 
@@ -46,8 +48,12 @@ sed -i \
 sed -i "0,/^[[:space:]]*template[[:space:]]*=.*/s||; previous: template = $current\ntemplate = #$DEST|" ig.ini
 
 echo "✓ Custom template created in $DEST/, based on $base_id#$base_ver"
-echo ""
 echo "  ig.ini now says: template = #$DEST"
 echo "  What is in it and what to try: $DEST/README.md"
 echo ""
-echo "  Run 'IG Publisher: Full Build' to see it."
+
+# A page that shows off the template's features, in the IG itself.
+add_page custom-template.md "Template" || true
+
+echo ""
+echo "  Run 'IG Publisher: Full Build' and open 'Template' in the menu."
