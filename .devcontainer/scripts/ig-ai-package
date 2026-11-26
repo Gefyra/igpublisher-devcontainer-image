@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Task "Download: AI Package". Points at the publisher's ai.zip for download:
+# the guide's pages and resource definitions as Markdown, indexed by llms.txt.
+#
+# Templates of the fhir2 family write one per language, output/<lang>/ai.zip;
+# older templates write output/ai.zip. Either is listed.
+set -uo pipefail
+
+shopt -s nullglob
+found=(output/ai.zip output/*/ai.zip)
+shopt -u nullglob
+
+zips=()
+for f in "${found[@]}"; do
+  [ -f "$f" ] && zips+=("$f")
+done
+
+if [ ${#zips[@]} -eq 0 ]; then
+  echo "✗ No ai.zip found in output/. Run a full build first."
+  exit 1
+fi
+
+if [ ${#zips[@]} -eq 1 ]; then
+  echo "✓ ai.zip is ready"
+else
+  echo "✓ ${#zips[@]} ai.zip files are ready, one per language"
+fi
+echo ""
+for f in "${zips[@]}"; do
+  echo "Path: $f"
+done
+echo "In VS Code: right-click the file → Download..."
+echo ""
+ls -lh "${zips[@]}"

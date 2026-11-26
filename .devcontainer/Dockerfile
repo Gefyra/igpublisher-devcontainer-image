@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY .devcontainer/scripts/ /usr/local/share/ig-devcontainer/
 RUN set -eux; \
     chmod 0755 /usr/local/share/ig-devcontainer/*; \
-    for c in ig-update-publisher ig-commit ig-package ig-json-resources; do \
+    for c in ig-update-publisher ig-commit ig-package ig-ai-package ig-json-resources; do \
       ln -sf "/usr/local/share/ig-devcontainer/$c" "/usr/local/bin/$c"; \
     done
 

@@ -54,6 +54,7 @@ The image ships wrappers for `.vscode/tasks.json`. They hold the logic so that `
 | `ig-update-publisher` | Fetches the current HL7 release into `input-cache/` |
 | `ig-commit "<msg>"` | Checks the git identity, stages everything, commits |
 | `ig-package` | Points at `output/full-ig.zip` for download |
+| `ig-ai-package` | Points at `output/<lang>/ai.zip` (the guide as Markdown for AI tools) for download |
 | `ig-json-resources` | Packs `fsh-generated/resources/*.json` into a ZIP |
 
 The remaining tasks call the tools directly: `sushi`, `./_genonce.sh -no-sushi`, `fhir-pkg-tool`, `python3 -m http.server 8080`.
