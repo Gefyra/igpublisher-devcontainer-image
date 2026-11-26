@@ -8,58 +8,46 @@ set -euo pipefail
 
 is_ig_workspace || exit 0
 
-# The IG Publisher scripts expect the jar in ./input-cache/, the image ships one
-# at /opt/ig/publisher.jar. Symlink instead of copying so the ~220 MB jar exists
-# exactly once. _genonce.sh only reads it, which works fine through the link.
-#
-# The link is NOT writable (root-owned /opt), so `ig-update-publisher` removes it
-# first and downloads a real file in its place.
 mkdir -p input-cache
 
-# The workspace outlives the container, so a link from an earlier one may still
-# be here pointing at nothing. Drop it before deciding what to do.
-if [ -L "$CACHE_JAR" ] && [ ! -e "$CACHE_JAR" ]; then
+# Earlier versions of this image linked input-cache/publisher.jar to the image's
+# jar. IG Publisher 3.x stops on any symbolic link that leads out of the IG's
+# folder, so that link has to go - including one left behind in a workspace
+# that outlived its container.
+if [ -L "$CACHE_JAR" ]; then
   rm -f "$CACHE_JAR"
+  echo "Removed the old link $CACHE_JAR (IG Publisher 3.x refuses links out of the IG)."
 fi
 
-if [ ! -e "$CACHE_JAR" ]; then
-  if [ -f "$IMAGE_JAR" ]; then
-    echo "Linking $CACHE_JAR -> $IMAGE_JAR"
-    ln -s "$IMAGE_JAR" "$CACHE_JAR"
-  elif [ -f _updatePublisher.sh ]; then
-    bash _updatePublisher.sh -y
+if [ -f "$IMAGE_JAR" ]; then
+  # The build scripts fall back to ../publisher.jar when input-cache/ has none.
+  # Linking the image's jar there keeps the ~220 MB jar in one place, outside
+  # the IG's folder where the publisher doesn't object.
+  if link_parent_jar; then
+    echo "Linked $PARENT_JAR -> $IMAGE_JAR"
   else
-    echo "No publisher in the image and no _updatePublisher.sh - skipped."
+    echo "⚠ Could not link $PARENT_JAR - run the 'Update IG Publisher' task before building."
   fi
 
-elif [ ! -L "$CACHE_JAR" ] && [ -f "$IMAGE_JAR" ]; then
-  # A real file left over from `ig-update-publisher`. Once the image has caught
-  # up, that copy buys nothing and just costs another ~220 MB, so fall back to
-  # the link. Only ever replaces it with an equal or newer publisher; if either
-  # version can't be read we keep the copy, because guessing could downgrade it.
-  cached=$(jar_version "$CACHE_JAR")
-  image=$(jar_version "$IMAGE_JAR")
+  if [ -f "$CACHE_JAR" ]; then
+    # A real file left over from `ig-update-publisher`. It takes precedence over
+    # the parent's jar. Once the image has caught up, that copy buys nothing and
+    # just costs another ~220 MB, so remove it. Only when the image's publisher
+    # is equal or newer; if either version can't be read we keep the copy,
+    # because guessing could downgrade it.
+    cached=$(jar_version "$CACHE_JAR")
+    image=$(jar_version "$IMAGE_JAR")
 
-  if [ -n "$cached" ] && [ -n "$image" ] && version_ge "$image" "$cached"; then
-    freed=$(jar_mb "$CACHE_JAR")
-    rm -f "$CACHE_JAR"
-    ln -s "$IMAGE_JAR" "$CACHE_JAR"
-    echo "Image publisher $image >= local copy $cached - relinked, freed ~${freed} MB."
+    if [ -n "$cached" ] && [ -n "$image" ] && version_ge "$image" "$cached"; then
+      freed=$(jar_mb "$CACHE_JAR")
+      rm -f "$CACHE_JAR"
+      echo "Image publisher $image >= local copy $cached - removed the copy, freed ~${freed} MB."
+    fi
   fi
-fi
-
-# Projects created from the template before the tasks moved into the image still
-# call _updatePublisher.sh directly. That writes with `curl -o`, which follows
-# the link we just created into root-owned /opt and fails with curl exit 23.
-# Nothing is destroyed, but the task is broken until tasks.json is updated.
-if [ -L "$CACHE_JAR" ] && [ -f .vscode/tasks.json ] \
-   && grep -q '_updatePublisher\.sh' .vscode/tasks.json 2>/dev/null; then
-  echo ""
-  echo "⚠ .vscode/tasks.json calls _updatePublisher.sh directly."
-  echo "  The 'Update IG Publisher' task fails that way: curl cannot write"
-  echo "  through the symlink into /opt. Replace its command with:"
-  echo "      ig-update-publisher"
-  echo ""
+elif [ ! -f "$CACHE_JAR" ] && [ -f _updatePublisher.sh ]; then
+  bash _updatePublisher.sh -y
+elif [ ! -f "$CACHE_JAR" ]; then
+  echo "No publisher in the image and no _updatePublisher.sh - skipped."
 fi
 
 echo "Devcontainer ready."

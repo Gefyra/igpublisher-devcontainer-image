@@ -6,6 +6,36 @@
 
 IMAGE_JAR=/opt/ig/publisher.jar
 CACHE_JAR=input-cache/publisher.jar
+# The HL7 build scripts look for the jar in input-cache/ first, then in the
+# parent folder. The image's jar is linked in as the parent's: IG Publisher 3.x
+# refuses to build an IG whose folder holds a symbolic link that leads out of
+# it, and the parent folder is outside the IG's.
+PARENT_JAR=../publisher.jar
+
+# Runs "$@", retrying with sudo when the current user may not write there
+# (in Codespaces, /workspaces can belong to root).
+as_needed() {
+  "$@" 2>/dev/null || sudo -n "$@"
+}
+
+# Points ../publisher.jar at the image's jar. Leaves a real file there alone:
+# that one was put there on purpose.
+link_parent_jar() {
+  [ -f "$IMAGE_JAR" ] || return 0
+  if [ -e "$PARENT_JAR" ] && [ ! -L "$PARENT_JAR" ]; then
+    return 0
+  fi
+  as_needed ln -sfn "$IMAGE_JAR" "$PARENT_JAR"
+}
+
+# The jar the build scripts will run, in their order of preference. Empty if none.
+effective_jar() {
+  if [ -f "$CACHE_JAR" ]; then
+    echo "$CACHE_JAR"
+  elif [ -f "$PARENT_JAR" ]; then
+    echo "$PARENT_JAR"
+  fi
+}
 
 # Prints the IG Publisher version of the jar at $1, empty if it can't be read.
 # Avoids starting the JVM: the manifest's Class-Path names

@@ -61,15 +61,16 @@ The remaining tasks call the tools directly: `sushi`, `./_genonce.sh -no-sushi`,
 
 ## How the publisher is managed
 
-The image already contains a publisher at `/opt/ig/publisher.jar` (~220 MB), but the build scripts expect it at `input-cache/publisher.jar`.
+The image already contains a publisher at `/opt/ig/publisher.jar` (~220 MB). The HL7 build scripts (`_genonce.sh` and friends) look for it in `input-cache/publisher.jar` first and in `../publisher.jar` second.
 
-`post-create.sh` therefore creates a **symlink** instead of copying the file or downloading it again. That has three effects:
+`post-create.sh` therefore links **`../publisher.jar`** — in `/workspaces/`, next to the IG's folder — to the image's jar, instead of copying the file or downloading it again:
 
 - The jar exists once instead of twice.
 - On every container rebuild the link points at the new image's version — there is no frozen copy.
-- The link cannot be written to, because `/opt` belongs to root. This is why `ig-update-publisher` removes it first and puts a real file in its place.
+- The link lies outside the IG's folder. IG Publisher 3.x stops on any symbolic link that leads *out of* the IG's folder (unless run with `-allow-external-links`), which is why earlier versions of this image, which linked `input-cache/publisher.jar`, broke with it. `post-create.sh` removes such a leftover link.
+- The link cannot be written to, because `/opt` belongs to root. `ig-update-publisher` therefore takes it away while `_updatePublisher.sh` downloads a real file into `input-cache/`, and puts it back afterwards.
 
-After a manual update there are two jars again (~440 MB). Once the image has caught up, the next rebuild swaps the copy back for the link and frees the space — but only for an equal or newer version, so a silent downgrade cannot happen.
+After a manual update there are two jars (~440 MB), and the one in `input-cache/` wins. Once the image has caught up, the next rebuild removes that copy and frees the space — but only for an equal or newer version, so a silent downgrade cannot happen.
 
 ## Updating
 
@@ -87,7 +88,7 @@ Projects created from the [template](https://github.com/Gefyra/IGPublisherDevCon
 
 ### Required: one task
 
-In the old `tasks.json` the "Update IG Publisher" task calls `./_updatePublisher.sh -y` directly. That writes with `curl -o` through the symlink into root-owned `/opt` and fails with `curl: (23) Failure writing output to destination`. Nothing is lost, but the task only works again after this change in `.vscode/tasks.json`:
+In the old `tasks.json` the "Update IG Publisher" task calls `./_updatePublisher.sh -y` directly. That writes with `curl -o` through the image's link (`../publisher.jar`) into root-owned `/opt` and fails with `curl: (23) Failure writing output to destination`. Nothing is lost, but the task only works again after this change in `.vscode/tasks.json`:
 
 ```json
 {
