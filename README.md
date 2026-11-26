@@ -76,6 +76,10 @@ The image is rebuilt automatically when a new IG Publisher release appears (chai
 
 **For IG authors: [Staying up to date](https://github.com/Gefyra/IGPublisherDevContainer#staying-up-to-date)** in the template README.
 
+## Testing changes
+
+Push to a `test/**` branch to build `:test` instead of `:latest`. That build sits on `ig-publisher-with-snapshot-support:test`, which a `test/**` branch in [ig-publisher-action](https://github.com/Gefyra/ig-publisher-action) publishes, so changes to the toolchain and to this image can be tried together. Point a test repository's `devcontainer.json` at `:test`. Neither `:latest`, the `sushi-*` tags nor the build cache are touched.
+
 ## Migrating an existing project
 
 Projects created from the [template](https://github.com/Gefyra/IGPublisherDevContainer) before this change still carry the configuration themselves. They keep working after a rebuild — with **one exception**.

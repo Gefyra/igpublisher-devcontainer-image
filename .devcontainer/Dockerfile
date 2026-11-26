@@ -1,4 +1,6 @@
-FROM ghcr.io/gefyra/ig-publisher-with-snapshot-support:latest
+# The test build (devcontainer-image.yml, test/** branches) passes the :test tag.
+ARG BASE_IMAGE=ghcr.io/gefyra/ig-publisher-with-snapshot-support:latest
+FROM ${BASE_IMAGE}
 
 # Devcontainer additions on top of the shared IG Publisher image.
 # python3: "Serve IG Locally" task (python3 -m http.server)
