@@ -25,10 +25,10 @@ Plain Markdown links work too: to a page of this IG, and, through `site.data.fhi
 Liquid variables give access to what the publisher knows about the IG, so a page never states a version that has gone stale.
 
 ```
-{% raw %}{{site.data.fhir.ig.title}}, version {{site.data.fhir.ig.version}}, canonical {{site.data.fhir.canonical}}{% endraw %}
+{% raw %}{{site.data.fhir.ig.title | default: site.data.fhir.ig.name}}, version {{site.data.fhir.ig.version}}, canonical {{site.data.fhir.canonical}}{% endraw %}
 ```
 
-{{site.data.fhir.ig.title}}, version {{site.data.fhir.ig.version}}, canonical {{site.data.fhir.canonical}}
+{{site.data.fhir.ig.title | default: site.data.fhir.ig.name}}, version {{site.data.fhir.ig.version}}, canonical {{site.data.fhir.canonical}}
 
 ### Conformance statements
 
@@ -61,32 +61,32 @@ __CONFORMANCE_TABLE__
 
 ### Diagrams
 
-Mermaid diagrams are written as a code block with the language `mermaid`. See the [Mermaid syntax](https://mermaid.js.org/intro/syntax-reference.html) for flowcharts, sequence diagrams and more.
+Mermaid diagrams are written into an element with the class `mermaid`. See the [Mermaid syntax](https://mermaid.js.org/intro/syntax-reference.html) for flowcharts, sequence diagrams and more.
 
-~~~
-```mermaid
+```
+<div class="mermaid">
 sequenceDiagram
     Client->>Server: GET __EXAMPLE_TYPE__/__EXAMPLE_ID__
     Server-->>Client: 200 OK, the __EXAMPLE_TYPE__
+</div>
 ```
-~~~
 
-```mermaid
+<div class="mermaid">
 sequenceDiagram
     Client->>Server: GET __EXAMPLE_TYPE__/__EXAMPLE_ID__
     Server-->>Client: 200 OK, the __EXAMPLE_TYPE__
-```
+</div>
 
 ### Parts of an example
 
 An example can be shown in JSON or XML, whole or in part. `BASE:` picks an element with FHIRPath, `ELIDE:` replaces elements with `...`, and `EXCEPT:` keeps only the elements named.
 
 ```
-{%! fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ JSON %}
+{%! fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ JSON ELIDE:text %}
 {%! fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ XML EXCEPT:id %}
 ```
 
-{% fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ JSON %}
+{% fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ JSON ELIDE:text %}
 
 {% fragment __EXAMPLE_TYPE__/__EXAMPLE_ID__ XML EXCEPT:id %}
 
