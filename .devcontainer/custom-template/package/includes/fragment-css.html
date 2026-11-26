@@ -1,0 +1,5 @@
+{% comment %}
+  Loaded in every page's <head>, after the base template's stylesheets, so the
+  rules in custom.css win. Add further stylesheets here if you need them.
+{% endcomment %}
+<link href="{{site.data.info.assets | escape}}assets/css/custom.css" rel="stylesheet"/>

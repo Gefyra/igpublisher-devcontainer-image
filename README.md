@@ -56,6 +56,7 @@ The image ships wrappers for `.vscode/tasks.json`. They hold the logic so that `
 | `ig-package` | Points at `output/full-ig.zip` for download |
 | `ig-ai-package` | Points at `output/<lang>/ai.zip` (the guide as Markdown for AI tools) for download |
 | `ig-json-resources` | Packs `fsh-generated/resources/*.json` into a ZIP |
+| `ig-add-template` | Copies a starter template (logo, colors, examples) to `custom-template/` and switches `ig.ini` to it; does nothing if one exists |
 
 The remaining tasks call the tools directly: `sushi`, `./_genonce.sh -no-sushi`, `fhir-pkg-tool`, `python3 -m http.server 8080`.
 
@@ -125,6 +126,6 @@ docker run --rm igpub-dc-test:local bash -c '
   bash /usr/local/share/ig-devcontainer/post-start.sh'
 ```
 
-The scripts live in `.devcontainer/scripts/` and end up at `/usr/local/share/ig-devcontainer/` in the image; the four `ig-*` wrappers are additionally linked into `/usr/local/bin/`. They expect the working directory to be the workspace folder, which is how both devcontainer lifecycle commands and VS Code tasks invoke them.
+The scripts live in `.devcontainer/scripts/` and end up at `/usr/local/share/ig-devcontainer/` in the image; the `ig-*` wrappers are additionally linked into `/usr/local/bin/`. They expect the working directory to be the workspace folder, which is how both devcontainer lifecycle commands and VS Code tasks invoke them.
 
 A push to `main` touching `.devcontainer/**` builds and publishes the image. A new base image also triggers the build through `repository_dispatch`.

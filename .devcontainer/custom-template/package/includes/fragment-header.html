@@ -1,0 +1,10 @@
+{% comment %}
+  Left side of the page header. The base template leaves this include empty
+  for child templates to fill. Swap the image for your own logo: put the file
+  into content/assets/images/ and change src, alt and the link below.
+{% endcomment %}
+        <div id="project-nav">
+          <a id="project-logo" no-external="true" href="https://gefyra.info/">
+            <img height="50" alt="Gefyra" src="{{site.data.info.assets | escape}}assets/images/gefyra-logo.png"/>
+          </a>
+        </div>

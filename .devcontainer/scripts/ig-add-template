@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Task "Add Custom Template". Copies a starter template into custom-template/
+# and switches ig.ini to it. The starter builds on the template the IG used so
+# far, so nothing is lost: it only adds a logo, colors and a few examples.
+set -uo pipefail
+
+SRC=/usr/local/share/ig-devcontainer/custom-template
+DEST=custom-template
+
+if [ ! -f ig.ini ]; then
+  echo "✗ ig.ini not found - is this an IG workspace?"
+  exit 1
+fi
+
+current=$(sed -n 's/^[[:space:]]*template[[:space:]]*=[[:space:]]*//p' ig.ini | head -1 | tr -d '\r')
+
+if [ -e "$DEST" ]; then
+  echo "ℹ $DEST/ already exists - nothing to do."
+  echo "  ig.ini uses: template = $current"
+  echo "  To start over, delete $DEST/ and run this task again."
+  exit 0
+fi
+
+if [[ "$current" == \#* ]]; then
+  echo "ℹ ig.ini already uses a local template ($current) - left alone."
+  exit 0
+fi
+
+if [ -z "$current" ]; then
+  echo "✗ No 'template = ...' line in ig.ini."
+  exit 1
+fi
+
+# The base is whatever ig.ini named, e.g. fhir2.base.template#current.
+base_id=${current%%#*}
+base_ver=current
+[[ "$current" == *#* ]] && base_ver=${current#*#}
+
+cp -r "$SRC" "$DEST" || exit 1
+sed -i \
+  -e "s|\"base\": \"[^\"]*\"|\"base\": \"$base_id\"|" \
+  -e "s|\"fhir2.base.template\": \"[^\"]*\"|\"$base_id\": \"$base_ver\"|" \
+  "$DEST/package/package.json"
+
+# Keep the previous value as a comment so the way back is obvious.
+sed -i "0,/^[[:space:]]*template[[:space:]]*=.*/s||; previous: template = $current\ntemplate = #$DEST|" ig.ini
+
+echo "✓ Custom template created in $DEST/, based on $base_id#$base_ver"
+echo ""
+echo "  ig.ini now says: template = #$DEST"
+echo "  What is in it and what to try: $DEST/README.md"
+echo ""
+echo "  Run 'IG Publisher: Full Build' to see it."

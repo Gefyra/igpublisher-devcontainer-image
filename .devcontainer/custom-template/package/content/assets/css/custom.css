@@ -1,0 +1,59 @@
+/*
+ * Styles of this IG's custom template. Loaded after the base template's
+ * stylesheets (see includes/fragment-css.html), so rules here win.
+ *
+ * Most of the look is driven by CSS variables the base template defines in
+ * assets/css/project.css. Overriding them here is the least fragile way to
+ * restyle the IG: it survives updates of the base template.
+ */
+
+:root {
+  /* Gefyra colors, taken from the logo */
+  --brand-color: #d32e22;          /* red */
+  --brand-color-dark: #a8241b;
+  --brand-text-color: #373736;     /* grey */
+
+  /* Header */
+  --ig-status-text-color: var(--brand-text-color);   /* IG title and status, top right */
+  --stripe-bg-color: var(--brand-color);
+
+  /* Menu bar */
+  --navbar-bg-color: var(--brand-text-color);
+  --btn-hover-color: var(--brand-color);
+  --btn-active-color: var(--brand-color-dark);
+
+  /* Links */
+  --link-color: var(--brand-color);
+  --link-hover-color: var(--brand-color-dark);
+
+  /* Footer */
+  --footer-bg-color: #2b2b2a;
+  --footer-container-bg-color: var(--brand-text-color);
+  --footer-hyperlink-text-color: #f0a39d;
+}
+
+/* Example: an accent line under the header */
+#segment-header {
+  border-bottom: 3px solid var(--brand-color);
+}
+
+/* Example: give the logo a little room */
+#project-logo img {
+  margin: 4px 0;
+}
+
+/* Example: the note box of includes/custom-note.html */
+.custom-note {
+  border-left: 4px solid var(--brand-color);
+  background-color: #fbeceb;
+  padding: 8px 14px;
+  margin: 12px 0;
+}
+.custom-note-title {
+  font-weight: bold;
+  color: var(--brand-color-dark);
+  margin-bottom: 4px;
+}
+.custom-note p:last-child {
+  margin-bottom: 0;
+}

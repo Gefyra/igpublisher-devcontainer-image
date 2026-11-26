@@ -1,0 +1,12 @@
+{% comment %}
+  Example of an include of your own: a highlighted note box. Any page in
+  input/pagecontent/ can use it, with an optional title:
+
+    {% include custom-note.html title="Note" text="Only for **German** systems." %}
+
+  The text is Markdown. The box is styled by .custom-note in custom.css.
+{% endcomment %}
+<div class="custom-note">
+{% if include.title %}<p class="custom-note-title">{{ include.title | escape }}</p>{% endif %}
+{{ include.text | markdownify }}
+</div>
