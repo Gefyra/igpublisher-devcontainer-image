@@ -13,7 +13,7 @@ Built on [`ig-publisher-with-snapshot-support`](https://github.com/Gefyra/ig-pub
 | IG Publisher (`/opt/ig/publisher.jar`) | Builds the IG |
 | SUSHI (`sushi`) | FSH → FHIR resources |
 | `fhir-pkg-tool` | Downloads and snapshots dependencies |
-| Java 21, Node 20, Ruby + Jekyll | Runtimes the publisher needs |
+| Java 21, Node 24, Ruby + Jekyll | Runtimes the publisher needs |
 | `python3` | Local preview server |
 | `zip` / `unzip` | Download tasks |
 | fontconfig + DejaVu/Liberation | The publisher renders images through `java.awt` |
