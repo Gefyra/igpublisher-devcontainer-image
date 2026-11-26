@@ -1,0 +1,1 @@
+This text comes from `input/intro-notes/StructureDefinition-__PROFILE_ID__-intro.md` and shows above the generated content of this page. The "Add Example Page" task added it; delete it together with the IG Features page.
