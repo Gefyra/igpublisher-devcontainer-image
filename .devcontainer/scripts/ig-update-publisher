@@ -14,18 +14,28 @@ if [ -L "$CACHE_JAR" ]; then
   rm -f "$CACHE_JAR"
 fi
 
-# With no jar in input-cache/, _updatePublisher.sh downloads to ../publisher.jar
-# when that exists - with `curl -o`, which would follow our link into the
-# root-owned image jar and fail. Take the link away so it picks input-cache/,
-# and put it back afterwards: the fresh copy in input-cache/ takes precedence
-# anyway, and the link is the fallback once post-create removes that copy.
+# The fresh jar has to land in input-cache/: the build scripts look there
+# first, then at ../publisher.jar (our link to the image's jar), and only then
+# in $FHIR_PUBLISHER_HOME. With no jar in input-cache/,
+# - current HL7 scripts download to $FHIR_PUBLISHER_HOME (~/.fhir/tools/publisher),
+#   which the link would shadow: pointing FHIR_PUBLISHER_HOME at input-cache/
+#   sends the download there;
+# - older ones download to ../publisher.jar when that exists - with `curl -o`,
+#   which would follow our link into the root-owned image jar and fail. Take the
+#   link away meanwhile, so they pick input-cache/ too.
+# The link comes back afterwards as the fallback once post-create removes the
+# copy in input-cache/ (when a newer image brings a newer jar).
 relink=false
 if [ -L "$PARENT_JAR" ]; then
   as_needed rm -f "$PARENT_JAR" && relink=true
 fi
 
-bash _updatePublisher.sh -y
+mkdir -p input-cache
+FHIR_PUBLISHER_HOME="$PWD/input-cache" bash _updatePublisher.sh -y
 rc=$?
+if [ $rc -eq 0 ] && [ -f "$CACHE_JAR" ]; then
+  echo "✓ $CACHE_JAR is now IG Publisher $(jar_version "$CACHE_JAR") - the build uses it from now on."
+fi
 
 if $relink; then
   link_parent_jar || echo "⚠ Could not restore the link $PARENT_JAR"
