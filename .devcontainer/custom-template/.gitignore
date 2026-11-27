@@ -1,0 +1,3 @@
+# Package index files the IG Publisher writes into a local template's folders
+.index.db
+.index.json

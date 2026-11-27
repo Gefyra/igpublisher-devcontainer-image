@@ -1,0 +1,13 @@
+@startuml
+' Added by the "Add Example Page" task for the IG Features page.
+' Becomes the include ig-features-sequence.svg during the build.
+hide footbox
+skinparam shadowing false
+participant "Client" as C
+participant "Server" as S
+C -> S: GET __EXAMPLE_TYPE__/__EXAMPLE_ID__
+activate S
+S --> C: 200 OK, the __EXAMPLE_TYPE__
+deactivate S
+note over C, S: Each arrow points from the caller to the one being called.
+@enduml

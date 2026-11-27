@@ -1,0 +1,11 @@
+{
+  "name": "custom.template",
+  "version": "0.1.0",
+  "type": "fhir.template",
+  "license": "CC0-1.0",
+  "description": "Project template on top of the IG's base template, created by the 'Add Custom Template' task",
+  "base": "fhir2.base.template",
+  "dependencies": {
+    "fhir2.base.template": "current"
+  }
+}

@@ -1,0 +1,14 @@
+{% comment %}
+  Files named _append.<name> are appended to the base template's <name>
+  instead of replacing it. This adds links to the footer's link list:
+  - always: the publisher's site
+  - Privacy: only if the IG has a page privacy.html (e.g. input/pagecontent/privacy.md)
+  - Source: only if the publisher found the IG's git repository
+{% endcomment %}
+                 | <a style="color: var(--footer-hyperlink-text-color)" href="https://gefyra.info/">gefyra.info</a>
+{%- if site.data.pages['privacy.html'] %}
+                 | <a style="color: var(--footer-hyperlink-text-color)" href="privacy.html">{% if include.lang == 'de' %}Datenschutz{% else %}Privacy{% endif %}</a>
+{%- endif %}
+{%- if site.data.fhir.repoSource %}
+                 | <a style="color: var(--footer-hyperlink-text-color)" target="_blank" rel="noopener" href="{{ site.data.fhir.repoSource | escape }}">{% if include.lang == 'de' %}Quelltext{% else %}Source{% endif %}</a>
+{%- endif %}

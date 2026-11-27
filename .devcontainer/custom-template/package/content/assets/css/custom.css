@@ -1,0 +1,172 @@
+/*
+ * Styles of this IG's custom template. Loaded after the base template's
+ * stylesheets (see includes/fragment-css.html), so rules here win.
+ *
+ * Most of the look is driven by CSS variables the base template defines in
+ * assets/css/project.css. Overriding them here is the least fragile way to
+ * restyle the IG: it survives updates of the base template.
+ */
+
+:root {
+  /* Gefyra colors, taken from the logo */
+  --brand-color: #d32e22;          /* red */
+  --brand-color-dark: #a8241b;
+  --brand-text-color: #373736;     /* grey */
+
+  /* Header */
+  --ig-status-text-color: var(--brand-text-color);   /* IG title and status, top right */
+  --stripe-bg-color: var(--brand-color);
+
+  /* Menu bar */
+  --navbar-bg-color: var(--brand-text-color);
+  --btn-hover-color: var(--brand-color);
+  --btn-active-color: var(--brand-color-dark);
+
+  /* Links */
+  --link-color: var(--brand-color);
+  --link-hover-color: var(--brand-color-dark);
+
+  /* Footer */
+  --footer-bg-color: #2b2b2a;
+  --footer-container-bg-color: var(--brand-text-color);
+  --footer-hyperlink-text-color: #f0a39d;
+}
+
+/* Example: an accent line under the header */
+#segment-header {
+  border-bottom: 3px solid var(--brand-color);
+}
+
+/* Example: give the logo a little room */
+#project-logo img {
+  margin: 4px 0;
+}
+
+/* Example: the note box of includes/custom-note.html */
+.custom-note {
+  border-left: 4px solid var(--brand-color);
+  background-color: #fbeceb;
+  padding: 8px 14px;
+  margin: 12px 0;
+}
+.custom-note-title {
+  font-weight: bold;
+  color: var(--brand-color-dark);
+  margin-bottom: 4px;
+}
+.custom-note p:last-child {
+  margin-bottom: 0;
+}
+
+/* Example: the open-item and assumption boxes of includes/open-item.html */
+.open-item {
+  display: flow-root;
+  margin: 1em 0;
+  padding: 10px 14px;
+  border: 1px solid var(--brand-color);
+  border-left-width: 6px;
+  border-radius: 3px;
+  background-color: #fbeceb;
+}
+.open-item.assumption {
+  border-color: #b8860b;
+  background-color: #fffbea;
+}
+.open-item-head {
+  font-weight: bold;
+  margin-bottom: .3em;
+}
+.open-item-label {
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .85em;
+  color: var(--brand-color-dark);
+}
+.open-item.assumption .open-item-label {
+  color: #8a6500;
+}
+.open-item-title {
+  margin-left: .6em;
+}
+.open-item-text > :last-child {
+  margin-bottom: 0;
+}
+
+/* Example: links next to the logo, from includes/header-links.html */
+#header-links {
+  margin-inline-start: 1em;
+  font-size: .9em;
+  vertical-align: middle;
+}
+.header-links-label {
+  color: var(--brand-text-color);
+  margin-inline-end: .3em;
+}
+
+/* Example: status badges in the header, from includes/fragment-header.html */
+#ig-badges {
+  float: var(--ig-left);
+  line-height: 50px;
+  margin: 8px 0 8px 12px;
+}
+.ig-badge {
+  display: inline-block;
+  padding: 0 .6em;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.8;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.ig-badge-draft        { color: #8a6500; border-color: #b8860b; background: #fffbea; }
+.ig-badge-active       { color: #ffffff; border-color: #2e7d32; background: #2e7d32; }
+.ig-badge-retired,
+.ig-badge-unknown      { color: #555555; border-color: #8a8a8a; background: #f3f3f3; }
+.ig-badge-experimental { color: var(--brand-color); border-color: var(--brand-color); border-style: dashed; background: #ffffff; }
+
+/* Example: the draft banner under the menu. Its text is set per language in
+   includes/fragment-css.html, which also decides when it shows. */
+#segment-breadcrumb::before {
+  display: block;
+  padding: 6px 16px;
+  background-color: #fff3cd;
+  border-bottom: 2px solid #b8860b;
+  color: #5c4300;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Example: tables written in Markdown. They have no attributes, while the
+   tables the publisher generates carry a class, data-fhir or border, so those
+   are left alone. */
+#segment-content table:not([class]):not([data-fhir]):not([border]) {
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+#segment-content table:not([class]):not([data-fhir]):not([border]) th,
+#segment-content table:not([class]):not([data-fhir]):not([border]) td {
+  border: 1px solid #c8c8c8;
+  padding: 4px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+#segment-content table:not([class]):not([data-fhir]):not([border]) th {
+  background-color: #f3f3f3;
+}
+#segment-content table:not([class]):not([data-fhir]):not([border]) tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
+/* Example: printing. Leave out the menu, the breadcrumb (and with it the
+   draft banner) and the badges; keep boxes in one piece. */
+@media print {
+  #segment-navbar,
+  #segment-breadcrumb,
+  #ig-badges { display: none !important; }
+  h3, h4 { break-after: avoid; }
+  .custom-note, .open-item, .stu-note { break-inside: avoid; }
+}

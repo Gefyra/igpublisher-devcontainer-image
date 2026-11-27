@@ -1,0 +1,6 @@
+{
+  "status": [
+    { "artifact": "StructureDefinition/__PROFILE_ID__", "state": "draft" },
+    { "artifact": "__EXAMPLE_TYPE__/__EXAMPLE_ID__", "state": "reviewed" }
+  ]
+}

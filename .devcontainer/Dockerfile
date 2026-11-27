@@ -1,4 +1,6 @@
-FROM ghcr.io/gefyra/ig-publisher-with-snapshot-support:latest
+# The test build (devcontainer-image.yml, test/** branches) passes the :test tag.
+ARG BASE_IMAGE=ghcr.io/gefyra/ig-publisher-with-snapshot-support:latest
+FROM ${BASE_IMAGE}
 
 # Devcontainer additions on top of the shared IG Publisher image.
 # python3: "Serve IG Locally" task (python3 -m http.server)
@@ -19,9 +21,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY .devcontainer/scripts/ /usr/local/share/ig-devcontainer/
 RUN set -eux; \
     chmod 0755 /usr/local/share/ig-devcontainer/*; \
-    for c in ig-update-publisher ig-commit ig-package ig-json-resources; do \
+    for c in ig-update-publisher ig-commit ig-package ig-ai-package ig-json-resources ig-add-template ig-add-example-page; do \
       ln -sf "/usr/local/share/ig-devcontainer/$c" "/usr/local/bin/$c"; \
     done
+
+# Starter for the "Add Custom Template" task (ig-add-template copies it into
+# the IG). After the chmod above on purpose: these are data, not programs.
+COPY .devcontainer/custom-template/ /usr/local/share/ig-devcontainer/custom-template/
+# Pages the "Add Custom Template" and "Add Example Page" tasks add to an IG.
+COPY .devcontainer/pages/ /usr/local/share/ig-devcontainer/pages/
 
 # Devcontainer image metadata (https://containers.dev/implementors/spec/#image-metadata).
 # Merged into every consuming devcontainer.json at create time: lifecycle commands

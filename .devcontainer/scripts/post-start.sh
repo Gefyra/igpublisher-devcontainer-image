@@ -11,17 +11,18 @@ STALE_DAYS=14
 
 is_ig_workspace || exit 0
 
-if [ ! -e "$CACHE_JAR" ]; then
-  echo "IG Publisher: no jar at $CACHE_JAR - run the 'Update IG Publisher' task."
+jar=$(effective_jar)
+if [ -z "$jar" ]; then
+  echo "IG Publisher: no jar in input-cache/ or the parent folder - run the 'Update IG Publisher' task."
   exit 0
 fi
 
-version=$(jar_version "$CACHE_JAR")
+version=$(jar_version "$jar")
 [ -n "$version" ] || version="unknown"
 
 # -L dereferences, so a linked jar reports the image's build date rather than
 # the mtime of the link itself. Neither GNU nor BSD stat follows links by default.
-mtime=$(stat -Lc %Y "$CACHE_JAR" 2>/dev/null || stat -Lf %m "$CACHE_JAR" 2>/dev/null || echo 0)
+mtime=$(stat -Lc %Y "$jar" 2>/dev/null || stat -Lf %m "$jar" 2>/dev/null || echo 0)
 if [ "$mtime" -gt 0 ]; then
   age=$(( ( $(date +%s) - mtime ) / 86400 ))
   built=$(date -d "@$mtime" +%Y-%m-%d 2>/dev/null || date -r "$mtime" +%Y-%m-%d 2>/dev/null)
@@ -30,7 +31,7 @@ else
   built="unknown"
 fi
 
-if [ -L "$CACHE_JAR" ]; then
+if [ -L "$jar" ]; then
   origin="from the image"
   remedy="'Codespaces: Full Rebuild Container' or 'Dev Containers: Rebuild Container' pulls a new image."
 else

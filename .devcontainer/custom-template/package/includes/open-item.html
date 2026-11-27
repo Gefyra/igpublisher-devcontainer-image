@@ -1,0 +1,32 @@
+{% comment %}
+  A box for an open question or an assumption that still needs to be
+  confirmed, with an anchor so other pages can link to it:
+
+    {% include open-item.html title="Paging" text="Whether servers **SHALL** support `_count` is still open." %}
+    {% include open-item.html kind="assumption" text="Clients send `Accept: application/fhir+json`." %}
+
+  text:  Markdown (required). For longer text, capture it first:
+           {% capture paging %}...{% endcapture %}
+           {% include open-item.html title="Paging" text=paging %}
+  title: optional heading of the box
+  kind:  "assumption", otherwise an open item
+  id:    the anchor (oi-<id>); made from the title, or the text, if not given
+  link, linktext: optional link, e.g. to the issue tracker
+  Styled by .open-item in custom.css.
+{% endcomment %}
+{%- comment -%} Pages of a multi-language IG live in a folder per language (de/...). {%- endcomment -%}
+{%- assign oi_lang = page.path | split: "/" | first -%}
+{%- if include.kind == "assumption" -%}
+{%- assign oi_class = "open-item assumption" -%}
+{%- if oi_lang == "de" -%}{%- assign oi_label = "Annahme" -%}{%- else -%}{%- assign oi_label = "Assumption" -%}{%- endif -%}
+{%- else -%}
+{%- assign oi_class = "open-item" -%}
+{%- if oi_lang == "de" -%}{%- assign oi_label = "Offener Punkt" -%}{%- else -%}{%- assign oi_label = "Open item" -%}{%- endif -%}
+{%- endif -%}
+{%- if include.id -%}{%- assign oi_id = include.id | slugify | prepend: "oi-" -%}
+{%- elsif include.title -%}{%- assign oi_id = include.title | slugify | prepend: "oi-" -%}
+{%- else -%}{%- assign oi_id = include.text | strip_html | truncate: 60, "" | slugify | prepend: "oi-" -%}{%- endif %}
+<div class="{{ oi_class }}" id="{{ oi_id }}">
+<p class="open-item-head"><span class="open-item-label">{{ oi_label }}</span>{% if include.title %} <span class="open-item-title">{{ include.title | escape }}</span>{% endif %}{% if include.link %} · <a href="{{ include.link | escape }}">{{ include.linktext | default: "Discussion" | escape }}</a>{% endif %}</p>
+<div class="open-item-text">{{ include.text | markdownify }}</div>
+</div>
