@@ -62,11 +62,11 @@ Extensions have `kind` "complex-type" and are left out here; `p.type == "Extensi
 
 ```
 {% raw %}{% assign res = site.data.resources["StructureDefinition/__PROFILE_ID__"] %}
-**{{ res.title | default: res.name }}:** {{ res.description }}{% endraw %}
+**{{ res.title | default: res.name }}:** {{ res.description | default: "(no description yet - set Description: in the FSH)" }}{% endraw %}
 ```
 
 {% assign res = site.data.resources["StructureDefinition/__PROFILE_ID__"] %}
-**{{ res.title | default: res.name }}:** {{ res.description }}
+**{{ res.title | default: res.name }}:** {{ res.description | default: "(no description yet - set Description: in the FSH)" }}
 
 ### Data of your own
 

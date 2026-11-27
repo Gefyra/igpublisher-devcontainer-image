@@ -14,12 +14,14 @@
   link, linktext: optional link, e.g. to the issue tracker
   Styled by .open-item in custom.css.
 {% endcomment %}
+{%- comment -%} Pages of a multi-language IG live in a folder per language (de/...). {%- endcomment -%}
+{%- assign oi_lang = page.path | split: "/" | first -%}
 {%- if include.kind == "assumption" -%}
 {%- assign oi_class = "open-item assumption" -%}
-{%- if include.lang == "de" or page.lang == "de" -%}{%- assign oi_label = "Annahme" -%}{%- else -%}{%- assign oi_label = "Assumption" -%}{%- endif -%}
+{%- if oi_lang == "de" -%}{%- assign oi_label = "Annahme" -%}{%- else -%}{%- assign oi_label = "Assumption" -%}{%- endif -%}
 {%- else -%}
 {%- assign oi_class = "open-item" -%}
-{%- if include.lang == "de" or page.lang == "de" -%}{%- assign oi_label = "Offener Punkt" -%}{%- else -%}{%- assign oi_label = "Open item" -%}{%- endif -%}
+{%- if oi_lang == "de" -%}{%- assign oi_label = "Offener Punkt" -%}{%- else -%}{%- assign oi_label = "Open item" -%}{%- endif -%}
 {%- endif -%}
 {%- if include.id -%}{%- assign oi_id = include.id | slugify | prepend: "oi-" -%}
 {%- elsif include.title -%}{%- assign oi_id = include.title | slugify | prepend: "oi-" -%}
